@@ -42,6 +42,11 @@ public class CVertex {
 	 */
 	List<CEdge> m_Edges = new ArrayList<CEdge>();
 	
+	public CVertex(int id  , CPoint point) {
+		this.m_id = id;
+		this.m_point = point;
+	}
+	
 	/*
 	 *  brief The most counter clockwise incoming halfedge of the vertex
 	 *  return the most CCW in halfedge
@@ -120,5 +125,10 @@ public class CVertex {
 		}
 
 		return he;
+	}
+	
+	@Override
+	public String toString() {
+		return Integer.toString(m_id) + "( " + Double.toString(m_point.getX()) + " , " + Double.toString(m_point.getY()) + " , " + Double.toString(m_point.getZ()) + " )";
 	}
 }

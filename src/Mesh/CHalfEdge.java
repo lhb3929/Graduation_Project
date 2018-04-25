@@ -20,7 +20,7 @@ public class CHalfEdge {
 	/*
 	 * Target vertex of the current halfedge.
 	 */
-	CVertex m_vertex;						//target vertex
+	CVertex m_vertex;		//target vertex
 	/*
 	 * Previous halfedge of the current halfedge, in the same face.
 	 */
@@ -57,6 +57,21 @@ public class CHalfEdge {
 	}
 	CHalfEdge he_next() {
 		return m_next;
+	}
+	CVertex vertex() {
+		return m_vertex;
+	}
+	CVertex target() {
+		return m_vertex;
+	}
+	CVertex source() {
+		return m_prev.vertex();
+	}
+	CFace face() {
+		return m_face;
+	}
+	CEdge edge() {
+		return m_edge;
 	}
 	
 	//CHalfEdge 实例变量  并不是 private  所以不用谢setter 和 getter
