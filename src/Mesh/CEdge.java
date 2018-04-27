@@ -17,12 +17,22 @@ public class CEdge {
 	 */
 	String m_string;
 	
+	int vertex1;
+	int vertex2;
+	
 	public CEdge(CHalfEdge normal , CHalfEdge dual) {
 		m_halfedge[0] = normal;
 		m_halfedge[1] = dual;
 	}
+	
 	public CEdge() {
 		this(null, null);
+	}
+	
+	public CEdge(int v1 , int v2) {
+		this();
+		this.vertex1 = v1;
+		this.vertex2 = v2;
 	}
 	/*!
 	* The halfedge attached to the current edge

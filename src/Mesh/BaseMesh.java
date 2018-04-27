@@ -259,6 +259,7 @@ public class BaseMesh {
 		//linking to face
 		for(int i = 0 ; i < 4 ; i ++ ) {
 			hes[i].m_face = face;
+			//一个面只有一个半边实例变量，只要完成半边到face的标记 和 半边pre ， next的标记 既可以完成遍历 和 获取整体数据变量
 			face.m_halfEdge = hes[i];
 		}
 		

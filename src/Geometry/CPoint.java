@@ -4,7 +4,7 @@ public class CPoint {
 	/*
 	 *  \f$(x,y,z)\f$ value
 	 */
-   private double[] v = new double[3];
+   double[] v = new double[3];
    
    public CPoint(double x , double y , double z) {
 	   v[0] = x;
@@ -54,6 +54,18 @@ public class CPoint {
    }
    
    
-   
+   @Override
+   public boolean equals(Object obj) {
+	   if(obj == null || obj instanceof CPoint) {
+		   return false;
+	   }else {
+		   CPoint item = (CPoint) obj;
+		   if(getX() == item.getX() && getY() == item.getY() && getZ() == item.getZ()) {
+			   return true;
+		   }else {
+			return false;
+		}
+	   }
+   }
    
 }
