@@ -1,7 +1,11 @@
 package Mesh;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import fromData.fromFile;
+import fromData.getData;
 
 /*
  * 一个六面体网格
@@ -20,6 +24,28 @@ public class HexMesh {
 		/*
 		 * 从文件里面读取数据  到这个六面体网格中
 		 */
+		getData data = new getData();
+		try {
+			/*
+			 * data  的  hexs  和  vertexs 变量分别存储着 六面体 和顶点数据
+			 */
+			data.Do(new fromFile().ReadFile());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.err.println("文件路径无法找到或者 文件不存在 ");
+		}
+		
+		for(Vertex vertex : data.getVertexs()) {
+			addVertexs(vertex);
+		}
+		for(Hex hex : data.getHexs()) {
+			addHex(hex);
+			
+			
+			//此处书写添加半面的代码  根据hex八个顶点的顺序，依次创建六个半面
+			//
+		}
 		
 		
 	}

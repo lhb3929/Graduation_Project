@@ -1,22 +1,17 @@
 import java.io.IOException;
 
-import Mesh.CQuad;
-import Mesh.CVertex;
-import fromData.fromFile;
-import fromData.getData;
-
 public class test {
 	public static void main(String args[]) throws IOException {
 //		getData demo = new getData();
 //		demo.Do(new fromFile().ReadFile());
-//		for(CVertex vertex : demo.getVertexs()) {
-//			System.out.print("vertex   ");
+//		for(Vertex vertex : demo.getVertexs()) {
+//			System.out.print("Vertex ");
 //			System.out.println(vertex);
 //		}
-//		for(CQuad quad : demo.getCQuads()) {
-//			System.out.print("quad     ");
-//			System.out.println(quad);
+//		for(Hex hex : demo.getHexs()) {
+//			System.out.print("Hex ");
+//			System.out.println(hex);
 //		}
-		System.out.println( -1 % 4);
+		
 	}
 }

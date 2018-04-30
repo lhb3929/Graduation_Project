@@ -9,6 +9,7 @@ public class Hex {
 	public int id;
 	public HalfFace halfFace;
 	public CVertex[] vertexs = new CVertex[8];
+	public int[] vertex_ids = new int[8];
 	
 	public Hex(int m_Id , HalfFace m_HalfFace , CVertex[] m_Vertexs) {
 		id = m_Id;
@@ -19,7 +20,29 @@ public class Hex {
 		this(m_Id, null, null);
 	}
 	
-	
+	@Override
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(Integer.toString(id));
+		stringBuilder.append("( ");
+		stringBuilder.append(Integer.toString(vertex_ids[0]));
+		stringBuilder.append(" , ");
+		stringBuilder.append(Integer.toString(vertex_ids[1]));
+		stringBuilder.append(" , ");
+		stringBuilder.append(Integer.toString(vertex_ids[2]));
+		stringBuilder.append(" , ");
+		stringBuilder.append(Integer.toString(vertex_ids[3]));
+		stringBuilder.append(" , ");
+		stringBuilder.append(Integer.toString(vertex_ids[4]));
+		stringBuilder.append(" , ");
+		stringBuilder.append(Integer.toString(vertex_ids[5]));
+		stringBuilder.append(" , ");
+		stringBuilder.append(Integer.toString(vertex_ids[6]));
+		stringBuilder.append(" , ");
+		stringBuilder.append(Integer.toString(vertex_ids[7]));
+		stringBuilder.append(" )");
+		return stringBuilder.toString();
+	}
 	
 	
 	
