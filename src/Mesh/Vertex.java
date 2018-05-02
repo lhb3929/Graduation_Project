@@ -9,11 +9,11 @@ public class Vertex {
 	/*
 	 * vertex id
 	 */
-	int m_id;
+	public int m_id;
 	/*
 	 * vertex position point
 	 */
-	CPoint m_point;
+	public CPoint m_point;
 //	/*
 //	 * inducating if the vertex is on the boundary
 //	 */
@@ -24,9 +24,10 @@ public class Vertex {
 	 * List of adjacent edges, such that current vertex is 
 	 * the end vertex of the edge with smaller id
 	 */
-	Set<Edge> m_Edges = new HashSet<Edge>();
+//	Set<Edge> m_Edges = new HashSet<Edge>();
 	
-	Set<Vertex> m_Vertexs = new HashSet<Vertex>();
+	//通过 存储 id来去mesh数据结构中 的map获取 相应 vertex
+	Set<Integer> m_Vertexs = new HashSet<Integer>();
 	
 	public Vertex(int id , CPoint point) {
 		this.m_id = id;
@@ -36,10 +37,10 @@ public class Vertex {
 		this(id, null);
 	}
 	
-	public Set<Vertex> getVertexs(){
+	public Set<Integer> getVertexs(){
 		return m_Vertexs;
 	}
-	public boolean addVertex(Vertex v) {
+	public boolean addVertex(int v) {
 		if(m_Vertexs.add(v)) {
 			return true;
 		}else {

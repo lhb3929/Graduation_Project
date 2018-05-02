@@ -4,7 +4,7 @@ public class CPoint {
 	/*
 	 *  \f$(x,y,z)\f$ value
 	 */
-   double[] v = new double[3];
+   public double[] v = new double[3];
    
    public CPoint(double x , double y , double z) {
 	   v[0] = x;
@@ -23,6 +23,15 @@ public class CPoint {
    }
    public double getZ() {
 	   return v[2];
+   }
+   public void setX(double item) {
+	   v[0] = item;
+   }
+   public void setY(double item) {
+	   v[1] = item;
+   }
+   public void setZ(double item) {
+	   v[2] = item;
    }
    /*
     * 四则运算，也可以修改成 return Point
