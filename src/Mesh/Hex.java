@@ -11,12 +11,12 @@ public class Hex {
 	/*
 	 * 顶点数组一般不会应用，一般都是使用int[] 然后在网格内的  map  通过id 获取对应vertex 
 	 */
-	public CVertex[] vertexs;
+	public Vertex[] vertexs;
 	//public CVertex[] vertexs = new CVertex[8] ;
 	
 	public int[] vertex_ids = new int[8];
 	
-	public Hex(int m_Id , HalfFace m_HalfFace , CVertex[] m_Vertexs) {
+	public Hex(int m_Id , HalfFace m_HalfFace , Vertex[] m_Vertexs) {
 		id = m_Id;
 		halfFace = m_HalfFace;
 		vertexs = m_Vertexs;

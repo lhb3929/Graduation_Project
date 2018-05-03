@@ -18,7 +18,7 @@ import java.util.List;
 public class fromFile {
 	
 	// 默认数据文件位置  。。。。 文件更换时需修改的变量
-	static final String defaultFilePath = "/Users/liuhongbin/Documents/Documents/毕业论文/Data/hex.hex";
+	static final String defaultFilePath = "/Users/liuhongbin/Documents/Documents/毕业论文/Data/hex1.hex";
     // 代码读取文件的实际地址
 	String filePath ;
 	

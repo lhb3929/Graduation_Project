@@ -10,8 +10,8 @@ public class HalfFace {
 	public String s_id;
 	
 	//有顺序的四个顶点，顶点之间的顺序为  逆时针，用于求法向量
-	public Vertex[] Vertexs = new Vertex[4];
-	
+	public Vertex[] Vertexs ;
+	public int[] int_Vertexs = new int[4];
 	public Hex hex;
 	
 	//因为顺序规定，所以当读入六面体八个点的时候，halfFace的前后对应关系也形成了
@@ -30,6 +30,15 @@ public class HalfFace {
 	}
 	public HalfFace(String m_id) {
 		this(m_id, null, null , null , null);
+	}
+	public HalfFace(String id , int v1 , int v2 , int v3 , int v4 ) {
+		s_id = id;
+		int_Vertexs[0] = v1;
+		int_Vertexs[1] = v2;
+		int_Vertexs[2] = v3;
+		int_Vertexs[3] = v4;
+		
+		
 	}
 	
 	

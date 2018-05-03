@@ -16,7 +16,11 @@ public class test {
 //		}
 		HexMesh demo = new HexMesh();
 		demo.readData();
-		demo.writeFile();
-		
+//		demo.writeFile();
+//		if(new CQuad(1,2,3,4).equals(new CQuad(5,3,2,1)) ) {
+//			System.out.println("true");
+//		}else {
+//			System.out.println("false");
+//		}
 	}
 }
