@@ -14,13 +14,15 @@ public class test {
 //			System.out.print("Hex ");
 //			System.out.println(hex);
 //		}
+		
 		HexMesh demo = new HexMesh();
 		demo.readData();
-//		demo.writeFile();
-//		if(new CQuad(1,2,3,4).equals(new CQuad(5,3,2,1)) ) {
-//			System.out.println("true");
-//		}else {
-//			System.out.println("false");
-//		}
+		demo.writeFileFirst();
+//		demo.Laplacian("/Users/liuhongbin/Documents/Documents/毕业论文/Data/Laplacian.hex",1);
+		demo.Laplacian_distance("/Users/liuhongbin/Documents/Documents/毕业论文/Data/Laplacian_distance.hex",1);
+//		
+//		demo.Laplacian("/Users/liuhongbin/Documents/Documents/毕业论文/Data/Laplacian2.hex", 5);
+		demo.Laplacian_distance("/Users/liuhongbin/Documents/Documents/毕业论文/Data/Laplacian3.hex", 5);
+		
 	}
 }

@@ -28,8 +28,8 @@ public class Mesh_Math {
 		CPoint cp = new CPoint(a2 * b3 - a3 * b2 , a3 * b1 - a1 * b3 , a1 * b2 - a2 * b1);
 		return cp;
 	}
-	public static boolean perpendicular( CPoint p1 , CPoint p2) {
-		double temp = p1.getX() * p2.getX() + p1.getY() * p2.getY() + p1.getZ() * p2.getZ();
+	public static boolean perpendicular( CPoint p1 ,CPoint p0 ,  CPoint p2) {
+		double temp = (p1.getX() - p0.getX()) * p2.getX() + (p1.getY() - p0.getY()) * p2.getY() + (p1.getZ() - p0.getZ()) * p2.getZ();
 		if(temp == 0 ) {
 			return true;
 		}else {

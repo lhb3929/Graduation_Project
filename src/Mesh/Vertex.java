@@ -34,7 +34,7 @@ public class Vertex {
 		this.m_point = point;
 	}
 	public Vertex(int id ) {
-		this(id, null);
+		this(id, new CPoint());
 	}
 	
 	public Set<Integer> getVertexs(){

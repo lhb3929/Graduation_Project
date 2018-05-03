@@ -37,7 +37,7 @@ public class HexMesh {
 	 */
 //	Set<Integer> outVertexs;   //外部点
 //	Set<Integer> inVertexs;    //内部点
-	Set<Integer> vertexs_opt = new HashSet<Integer>();  //可优化点
+	public Set<Integer> vertexs_opt = new HashSet<Integer>();  //可优化点
 	
 	
 	
@@ -46,36 +46,20 @@ public class HexMesh {
 		 * 尝试写成单例模式
 		 */
 	}
+	public void virvalFilfer() {
+		for(Map.Entry<Integer, Vertex> entry : h_Vertexs.entrySet() ) {
+			vertexs_opt.add(entry.getKey());
+		}
+	}
 	public void Vertexfilter() {
+		
 		Set<Integer> outVertexs = new HashSet<Integer>();   //外部点
 		Set<Integer> inVertexs = new HashSet<Integer>();    //内部点
 		
 		
 		Set<CQuad> t_Quads_in = new HashSet<CQuad>();
 		Set<CQuad> t_Quads_out = new HashSet<CQuad>();
-//		
-//		for(int i = 0 ; i < quads.size() ; i ++ ) {
-////			if(quads.get(i).equals(quads.get(22))) {
-////				System.out.println("true" + Integer.toString(i));
-////			}
-//			System.out.println( Integer.toString(i));
-//			if(t_Quads1.contains ( quads.get(i))) {
-//				t_Quads2.remove(quads.get(i));
-//				inVertexs.add(quads.get(i).vertexs[0]);
-//				inVertexs.add(quads.get(i).vertexs[1]);
-//				inVertexs.add(quads.get(i).vertexs[2]);
-//				inVertexs.add(quads.get(i).vertexs[3]);
-//			}else {
-//				t_Quads1.add(quads.get(i));
-//				t_Quads2.add(quads.get(i));
-//			}
-//		}
-//		for(CQuad i : t_Quads2) {
-//			outVertexs.add(i.vertexs[0]);
-//			outVertexs.add(i.vertexs[1]);
-//			outVertexs.add(i.vertexs[2]);
-//			outVertexs.add(i.vertexs[3]);
-//		}
+
 		Map<Integer, List<CQuad>> map_cquads = new HashMap<Integer , List<CQuad>>();
 		for(int i = 0 ; i < quads.size() ; i ++) {
 			if(map_cquads.get(quads.get(i).vertexs[0] + quads.get(i).vertexs[1] + quads.get(i).vertexs[2] + quads.get(i).vertexs[3]) == null) {
@@ -105,8 +89,11 @@ public class HexMesh {
 					
 				}
 			}
+			counter ++;
+			if(counter %1000 ==0) {
+				System.out.println("do   " + Integer.toString(counter ++ ));
+			}
 			
-//			System.out.println("do   " + Integer.toString(counter ++ ));
 		}
 		for(CQuad in : t_Quads_in ) {
 			inVertexs.add(in.vertexs[0]);
@@ -115,10 +102,10 @@ public class HexMesh {
 			inVertexs.add(in.vertexs[3]);
 		}
 		for(CQuad in : t_Quads_out ) {
-			inVertexs.add(in.vertexs[0]);
-			inVertexs.add(in.vertexs[1]);
-			inVertexs.add(in.vertexs[2]);
-			inVertexs.add(in.vertexs[3]);
+			outVertexs.add(in.vertexs[0]);
+			outVertexs.add(in.vertexs[1]);
+			outVertexs.add(in.vertexs[2]);
+			outVertexs.add(in.vertexs[3]);
 		}
 		
 		for(int i : inVertexs) {
@@ -131,6 +118,8 @@ public class HexMesh {
 			for(int j : h_Vertexs.get(i).m_Vertexs) {
 				if( outVertexs.contains(j) ) {
 					vertex.m_Vertexs.add(j);
+				}else {
+					System.out.println(Integer.toString(j) + "不在表面" );
 				}
 			}
 			map_outVertexs.put(i, vertex);
@@ -147,16 +136,20 @@ public class HexMesh {
 	}
 	public boolean isPlane(Map<Integer , Vertex> map_outVertexs , int id) {
 		Vertex vertex = map_outVertexs.get(id);
-		int counter = 0;
+		int counter = 1;
 		Vertex[] vertexs = new Vertex[3];
+		vertexs[0] = h_Vertexs.get(id);
 		CPoint temp = null;
 		for(int i : vertex.m_Vertexs) {
 			if(counter < 3) {
-				vertexs[counter] = h_Vertexs.get(i);
+				vertexs[counter ++] = h_Vertexs.get(i);
 			}else if(counter == 3){
 				temp = Mesh_Math.CalNormalVector(vertexs[0], vertexs[1], vertexs[2]);
+				if( !Mesh_Math.perpendicular(h_Vertexs.get(i).m_point , vertexs[0].m_point ,  temp)) {
+					return false;
+				}
 			}else {
-				if( !Mesh_Math.perpendicular(h_Vertexs.get(i).m_point, temp)) {
+				if( !Mesh_Math.perpendicular(h_Vertexs.get(i).m_point , vertexs[0].m_point ,  temp)) {
 					return false;
 				}
 			}
@@ -164,53 +157,79 @@ public class HexMesh {
 		return true;
 	}
 
-	
-	
+	/*
+	 * times次数重载
+	 */
+	public void Laplacian(String fileName , int times) throws IOException{
+		Map<Integer , Vertex> Vertexs = null;
+		for(int i = 0 ; i < times ; i ++) {
+			Vertexs = Laplacian();
+		}
+		writeFile( Vertexs , fileName);
+	}
 	
 	//Laplacian 平滑技术
-	public void Laplacian() {
-		
-		for(Map.Entry<Integer, Vertex> entry : h_Vertexs.entrySet()) {
-			Vertex item = entry.getValue();
+	public Map<Integer , Vertex> Laplacian() throws IOException {
+		Map<Integer , Vertex> Vertexs = new HashMap<Integer , Vertex>();
+		for(int i : vertexs_opt) {
+			Vertex item = new Vertex(i);
 			double sum_X = 0.0 , sum_Y = 0.0 ,sum_Z = 0.0;
 			/*
 			 * 只是根据邻接点求得 该点坐标，并未把该点本身算入
 			 */
-			for(int i : item.m_Vertexs ) {
-				sum_X += getVertex_X(i);
-				sum_Y += getVertex_Y(i);
-				sum_Z += getVertex_Z(i);
+			for(int j : h_Vertexs.get(i).m_Vertexs ) {
+				sum_X += getVertex_X(j);
+				sum_Y += getVertex_Y(j);
+				sum_Z += getVertex_Z(j);
 			}
-			item.m_point.setX(sum_X / item.m_Vertexs.size());
-			item.m_point.setY(sum_Y / item.m_Vertexs.size());
-			item.m_point.setZ(sum_Z / item.m_Vertexs.size());
+			int size = h_Vertexs.get(i).m_Vertexs.size();
+			item.m_point.setX(sum_X / size);
+			item.m_point.setY(sum_Y / size);
+			item.m_point.setZ(sum_Z / size);
 			
-			entry.setValue(item);
-			
+			Vertexs.put(i, item);
 		}
+		return Vertexs;
+		
+		
 	}
 	
-	//  	Laplacian平滑技术
-	public void Laplacian_V() {
-		
-		for(Map.Entry<Integer, Vertex> entry : h_Vertexs.entrySet()) {
-			Vertex item = entry.getValue();
-			double sum_X = item.m_point.getX() , sum_Y = item.m_point.getY() , sum_Z = item.m_point.getZ();
-			/*
-			 * 根据邻接点 和 该点本身 求得 该点坐标 
-			 */
-			for(int i : item.m_Vertexs ) {
-				sum_X += getVertex_X(i);
-				sum_Y += getVertex_Y(i);
-				sum_Z += getVertex_Z(i);
-			}
-			item.m_point.setX(sum_X / ( item.m_Vertexs.size() + 1 ));
-			item.m_point.setY(sum_Y / ( item.m_Vertexs.size() + 1 ));
-			item.m_point.setZ(sum_Z / ( item.m_Vertexs.size() + 1 ));
-			
-			entry.setValue(item);
+	public void Laplacian_distance(String fileName ,int times) throws IOException{
+		Map<Integer , Vertex> Vertexs = null;
+		for(int i = 0 ; i < times ; i ++) {
+			Vertexs = Laplacian_distance();
 		}
+		writeFile(Vertexs , fileName);
 	}
+	/*
+	 * 举例加权矩阵
+	 */
+	public Map<Integer , Vertex>  Laplacian_distance() throws IOException {
+		Map<Integer , Vertex> Vertexs = new HashMap<Integer , Vertex>();
+		for(int i : vertexs_opt) {
+			Vertex item = new Vertex(i);
+			double sum_X = 0.0 , sum_Y = 0.0 ,sum_Z = 0.0;
+			/*
+			 * 只是根据邻接点求得 该点坐标，并未把该点本身算入
+			 */
+			double sum = 0.0;
+			for(int j : h_Vertexs.get(i).m_Vertexs ) {
+				double distance = Mesh_Math.computeDistance(h_Vertexs.get(i).m_point , h_Vertexs.get(j).m_point );
+				sum += distance;
+				sum_X += ( getVertex_X(j) - h_Vertexs.get(i).m_point.getX() ) * distance;
+				sum_Y += ( getVertex_Y(j) - h_Vertexs.get(i).m_point.getY() ) * distance;
+				sum_Z += ( getVertex_Z(j) - h_Vertexs.get(i).m_point.getZ() ) * distance;
+			}
+			item.m_point.setX(sum_X / sum + h_Vertexs.get(i).m_point.getX());
+			item.m_point.setY(sum_Y / sum + h_Vertexs.get(i).m_point.getY());
+			item.m_point.setZ(sum_Z / sum + h_Vertexs.get(i).m_point.getZ());
+			
+			Vertexs.put(i, item);
+			
+		}
+		return Vertexs;
+	}
+	
 		
 	
 	public double getVertex_X(int id) {
@@ -310,14 +329,24 @@ public class HexMesh {
 			
 			
 		}
-		Vertexfilter();
+		/*
+		 * 
+		 */
+//		Vertexfilter();
+		virvalFilfer();
+		
+		
 		System.out.println("read succeed !!!");
 		System.out.println("test data !!!");
 		
 	}
-	public void writeFile() throws IOException {
+	public void writeFile(Map<Integer , Vertex> vertexs , String fileName) throws IOException {
 		writeData wData = new writeData();
-		wData.writeFile(this);
+		wData.writeFile(this , vertexs, fileName);
+	}
+	public void writeFileFirst() throws IOException {
+		writeData wData = new writeData();
+		wData.writeFileFirst(this , "/Users/liuhongbin/Documents/Documents/毕业论文/Data/outputfirst.hex");
 	}
 	
 	
