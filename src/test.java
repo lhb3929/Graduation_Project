@@ -20,7 +20,7 @@ public class test {
 		demo.writeFileFirst();
 //		demo.Laplacian("/Users/liuhongbin/Documents/Documents/毕业论文/Data/Laplacian.hex",1);
 		demo.Laplacian_distance("/Users/liuhongbin/Documents/Documents/毕业论文/Data/Laplacian_distance.hex",1);
-//		
+		demo.HCLaplacian("/Users/liuhongbin/Documents/Documents/毕业论文/Data/HCLaplacian.hex",1);
 //		demo.Laplacian("/Users/liuhongbin/Documents/Documents/毕业论文/Data/Laplacian2.hex", 5);
 		demo.Laplacian_distance("/Users/liuhongbin/Documents/Documents/毕业论文/Data/Laplacian3.hex", 5);
 		

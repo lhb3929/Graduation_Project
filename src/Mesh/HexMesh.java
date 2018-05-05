@@ -18,6 +18,10 @@ import Math.Mesh_Math;
  * 一个六面体网格
  */
 public class HexMesh {
+	/*
+	 * 正指数
+	 */
+	public final static double index = 1;
 	
 	/*
 	 * 网格数据
@@ -31,12 +35,7 @@ public class HexMesh {
 	
 	
 	
-	
-	/*
-	 * 选出可优化结点时使用的数据结构
-	 */
-//	Set<Integer> outVertexs;   //外部点
-//	Set<Integer> inVertexs;    //内部点
+
 	public Set<Integer> vertexs_opt = new HashSet<Integer>();  //可优化点
 	
 	
@@ -52,7 +51,11 @@ public class HexMesh {
 		}
 	}
 	public void Vertexfilter() {
-		
+		/*
+		 * 选出可优化结点时使用的数据结构
+		 */
+//		Set<Integer> outVertexs;   //外部点
+//		Set<Integer> inVertexs;    //内部点
 		Set<Integer> outVertexs = new HashSet<Integer>();   //外部点
 		Set<Integer> inVertexs = new HashSet<Integer>();    //内部点
 		
@@ -229,7 +232,43 @@ public class HexMesh {
 		}
 		return Vertexs;
 	}
+	/*
+	 * times次数重载
+	 */
+	public void HCLaplacian(String fileName , int times) throws IOException{
+		Map<Integer , Vertex> Vertexs = null;
+		for(int i = 0 ; i < times ; i ++) {
+			Vertexs = HCLaplacian(index);
+			Vertexs = HCLaplacian(index);
+		}
+		writeFile( Vertexs , fileName);
+	}
 	
+	//Laplacian 平滑技术
+	public Map<Integer , Vertex> HCLaplacian(double tmp) throws IOException {
+		Map<Integer , Vertex> Vertexs = new HashMap<Integer , Vertex>();
+		for(int i : vertexs_opt) {
+			Vertex item = new Vertex(i);
+			double sum_X = 0.0 , sum_Y = 0.0 ,sum_Z = 0.0;
+			/*
+			 * 只是根据邻接点求得 该点坐标，并未把该点本身算入
+			 */
+			for(int j : h_Vertexs.get(i).m_Vertexs ) {
+				sum_X += getVertex_X(j) * tmp;
+				sum_Y += getVertex_Y(j) * tmp;
+				sum_Z += getVertex_Z(j) * tmp;
+			}
+			int size = h_Vertexs.get(i).m_Vertexs.size();
+			item.m_point.setX(sum_X / size + h_Vertexs.get(i).m_point.getX());
+			item.m_point.setY(sum_Y / size + h_Vertexs.get(i).m_point.getX());
+			item.m_point.setZ(sum_Z / size + h_Vertexs.get(i).m_point.getX());
+			
+			Vertexs.put(i, item);
+		}
+		return Vertexs;
+		
+		
+	}
 		
 	
 	public double getVertex_X(int id) {
