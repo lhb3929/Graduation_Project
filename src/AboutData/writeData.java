@@ -29,6 +29,11 @@ public class writeData {
 	}
 	
 	public void writeFile(HexMesh hm , Map<Integer , Vertex> h_Vertexs , String fileName) throws IOException {
+		/*
+		 * 删除原来文件并创建新文件
+		 */
+		init_file(fileName);
+		
 		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName)));
 		Vertex[] vertexs = new Vertex[h_Vertexs.size()];
 		Hex[] hexs = new Hex[hm.h_Hexs.size()];
@@ -78,6 +83,11 @@ public class writeData {
 		
 	}
 	public void writeFileFirst(HexMesh hm , String fileName) throws IOException {
+		/*
+		 * 删除原来文件并创建新文件
+		 */
+		init_file(fileName);
+		
 		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName)));
 		
 		Hex[] hexs = new Hex[hm.h_Hexs.size()];
@@ -139,5 +149,39 @@ public class writeData {
 		bw.close();
 		System.out.println(fileName + "write succeed !!!");
 		
+	}
+	public boolean rm(String fileName) {
+		File file = new File(fileName);
+		if (file.exists() && file.isFile()) {
+	            if (file.delete()) {
+	                System.out.println("删除单个文件" + fileName + "成功！");
+	                return true;
+	            } else {
+	                System.out.println("删除单个文件" + fileName + "失败！");
+	                return false;
+	            }
+	    } else {
+	            System.out.println("删除单个文件失败：" + fileName + "不存在！");
+	            return false;
+	    }
+	}
+	public boolean mkdir(String fileName) throws IOException {
+		File file = new File(fileName);
+		if(!file.exists()) {
+			if(file.createNewFile()) {
+				System.out.println("创建单个文件" + fileName + "成功！");
+				return true;
+			}else {
+				System.out.println("创建单个文件" + fileName + "成功！");
+				return false;
+			}
+		}else {
+			 System.out.println("创建单个文件失败：" + fileName + "已存在！");
+	            return false;
+		}
+	}
+	public void init_file(String fileName) throws IOException {
+		rm(fileName);
+		mkdir(fileName);
 	}
 }
