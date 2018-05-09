@@ -70,6 +70,9 @@ public class HexMesh {
 			}
 			map_cquads.get(quads.get(i).vertexs[0] + quads.get(i).vertexs[1] + quads.get(i).vertexs[2] + quads.get(i).vertexs[3]).add(quads.get(i));
 		}
+		/*
+		 * 输出计数器
+		 */
 		int counter = 0;
 		for(Map.Entry<Integer, List<CQuad>> entry : map_cquads.entrySet()) {
 			if(entry.getValue().size() == 1) {
@@ -93,7 +96,7 @@ public class HexMesh {
 				}
 			}
 			counter ++;
-			if(counter %1000 ==0) {
+			if(counter % 1000 == 0) {
 				System.out.println("do   " + Integer.toString(counter ++ ));
 			}
 			
