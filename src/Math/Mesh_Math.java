@@ -14,7 +14,7 @@ public class Mesh_Math {
 		return CalNormalVector(halfFace.Vertexs[0] , halfFace.Vertexs[1] , halfFace.Vertexs[2]);
 	}
 	/*
-	 * 参数三个点（按顺序的三个点） ，使用右手法则求出 三点确定平面的法向量
+	 * 参数三个点（按顺序的三个点） ，使用右手法则求出 三点确定平面的	法向量
 	 */
 	public static CPoint CalNormalVector(Vertex v1 , Vertex v2  , Vertex v3) {
 		
@@ -46,7 +46,6 @@ public class Mesh_Math {
 	 * 通过一个形状矩阵计算 ， 矩阵是否规则
 	 */
 	public double Jacobi(Hex hex) {
-		
 		
 		return 0.0;
 	}

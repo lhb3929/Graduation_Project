@@ -29,17 +29,12 @@ public class HexMesh {
 	public Map<Integer , Vertex> h_Vertexs = new HashMap<Integer , Vertex>();
 	public Map<String , HalfFace> h_HalfFaces = new HashMap<String , HalfFace>();
 	public Map<Integer , Hex> h_Hexs = new HashMap<Integer , Hex>();
+	public List<CQuad> quads = new ArrayList<CQuad>(); //辅助记录四边形集合
 	
-	public List<CQuad> quads = new ArrayList<CQuad>();
-	
-	
-	
-	
-
 	public Set<Integer> vertexs_opt = new HashSet<Integer>();  //可优化点
+	Map<Integer , Vertex> map_outVertexs = new HashMap<Integer , Vertex>();  //外部结点的邻域都在表面的集合
 	
-	
-	
+	public Map<Integer , Vertex> n_Vertexs = new HashMap<Integer , Vertex>();
 	public HexMesh() {
 		/*
 		 * 尝试写成单例模式
@@ -59,48 +54,62 @@ public class HexMesh {
 		Set<Integer> outVertexs = new HashSet<Integer>();   //外部点
 		Set<Integer> inVertexs = new HashSet<Integer>();    //内部点
 		
-		
 		Set<CQuad> t_Quads_in = new HashSet<CQuad>();
 		Set<CQuad> t_Quads_out = new HashSet<CQuad>();
 
-		Map<Integer, List<CQuad>> map_cquads = new HashMap<Integer , List<CQuad>>();
-		for(int i = 0 ; i < quads.size() ; i ++) {
-			if(map_cquads.get(quads.get(i).vertexs[0] + quads.get(i).vertexs[1] + quads.get(i).vertexs[2] + quads.get(i).vertexs[3]) == null) {
-				map_cquads.put(quads.get(i).vertexs[0] + quads.get(i).vertexs[1] + quads.get(i).vertexs[2] + quads.get(i).vertexs[3],new ArrayList<CQuad>());
-			}
-			map_cquads.get(quads.get(i).vertexs[0] + quads.get(i).vertexs[1] + quads.get(i).vertexs[2] + quads.get(i).vertexs[3]).add(quads.get(i));
-		}
 		/*
-		 * 输出计数器
+		 * 使用一种跟优化的数据结构来空间置换时间
 		 */
-		int counter = 0;
-		for(Map.Entry<Integer, List<CQuad>> entry : map_cquads.entrySet()) {
-			if(entry.getValue().size() == 1) {
-				t_Quads_out.add(entry.getValue().get(0));
-//				System.out.println("out" );
+//		Map<Integer, List<CQuad>> map_cquads = new HashMap<Integer , List<CQuad>>();
+//		for(int i = 0 ; i < quads.size() ; i ++) {
+//			if(map_cquads.get(quads.get(i).vertexs[0] + quads.get(i).vertexs[1] + quads.get(i).vertexs[2] + quads.get(i).vertexs[3]) == null) {
+//				map_cquads.put(quads.get(i).vertexs[0] + quads.get(i).vertexs[1] + quads.get(i).vertexs[2] + quads.get(i).vertexs[3],new ArrayList<CQuad>());
+//			}
+//			map_cquads.get(quads.get(i).vertexs[0] + quads.get(i).vertexs[1] + quads.get(i).vertexs[2] + quads.get(i).vertexs[3]).add(quads.get(i));
+//		}
+//		/*
+//		 * 输出计数器
+//		 */
+//		int counter = 0;
+//		for(Map.Entry<Integer, List<CQuad>> entry : map_cquads.entrySet()) {
+//			if(entry.getValue().size() == 1) {
+//				t_Quads_out.add(entry.getValue().get(0));
+////				System.out.println("out" );
+//			}else {
+//				for(int i = 0 ; i < entry.getValue().size() ; i ++ ) {
+//					boolean flag = true;
+//					for(int j = 0 ; j < entry.getValue().size() && flag; j ++ ) {
+//						if( entry.getValue().get(j).equals(entry.getValue().get(i)) ) {
+//							t_Quads_in.add(entry.getValue().get(i));
+////							System.out.println("in" + Integer.toString(entry.getKey()));
+//							flag = false;
+//						}
+//					}
+//					if(flag) {
+//						t_Quads_out.add(entry.getValue().get(i));
+////						System.out.println("out" + Integer.toString(entry.getKey()));
+//					}
+//					
+//				}
+//			}
+//			counter ++;
+//			if(counter % 1000 == 0) {
+//				System.out.println("do   " + Integer.toString(counter ++ ));
+//			}
+//			
+//		}
+		
+		/*
+		 * 遍历所有面，能够直接加入到in面集合中的为内部面，如果不能加入则已存在过一次，则加入到外部面中
+		 */
+		for( CQuad quad : quads ) {
+			if(t_Quads_in.add(quad)) {
+				
 			}else {
-				for(int i = 0 ; i < entry.getValue().size() ; i ++ ) {
-					boolean flag = true;
-					for(int j = 0 ; j < entry.getValue().size() && flag; j ++ ) {
-						if( entry.getValue().get(j).equals(entry.getValue().get(i)) ) {
-							t_Quads_in.add(entry.getValue().get(i));
-//							System.out.println("in" + Integer.toString(entry.getKey()));
-							flag = false;
-						}
-					}
-					if(flag) {
-						t_Quads_out.add(entry.getValue().get(i));
-//						System.out.println("out" + Integer.toString(entry.getKey()));
-					}
-					
-				}
+				t_Quads_out.add(quad);
 			}
-			counter ++;
-			if(counter % 1000 == 0) {
-				System.out.println("do   " + Integer.toString(counter ++ ));
-			}
-			
 		}
+		
 		for(CQuad in : t_Quads_in ) {
 			inVertexs.add(in.vertexs[0]);
 			inVertexs.add(in.vertexs[1]);
@@ -113,22 +122,41 @@ public class HexMesh {
 			outVertexs.add(in.vertexs[2]);
 			outVertexs.add(in.vertexs[3]);
 		}
-		
+		/*
+		 * 使用结束，释放空间，防止内存泄漏
+		 */
+		t_Quads_in = null;
+		t_Quads_out = null;
+		/*
+		 * 初始化 n_Vertexs 数据结构
+		 */
+		for(int tmp : outVertexs) {
+			Vertex vertex = n_Vertexs.get(tmp);
+			for(int v : vertex.m_Vertexs) {
+				if( !outVertexs.contains(v) && inVertexs.contains(v)) {
+					vertex.m_Vertexs.remove(v);
+				}
+			}
+		}
+		/*
+		 * 内部结点皆可优化
+		 */
 		for(int i : inVertexs) {
 			vertexs_opt.add(i);
 		}
-		
-		Map<Integer , Vertex> map_outVertexs = new HashMap<Integer , Vertex>();
+		/*
+		 * 从外部结点中筛选出可优化的
+		 */
 		for(int i : outVertexs) {
-			Vertex vertex = new Vertex(i);
+			Vertex vertex_tmp = new Vertex(i);
 			for(int j : h_Vertexs.get(i).m_Vertexs) {
 				if( outVertexs.contains(j) ) {
-					vertex.m_Vertexs.add(j);
+					vertex_tmp.m_Vertexs.add(j);
 				}else {
-					System.out.println(Integer.toString(j) + "不在表面" );
+					System.out.println("结点 " + Integer.toString(j) + " 不在表面" );
 				}
 			}
-			map_outVertexs.put(i, vertex);
+			map_outVertexs.put(i, vertex_tmp);
 		}
 		for(int i : outVertexs) {
 			if(isPlane(map_outVertexs , i)) {
@@ -137,9 +165,10 @@ public class HexMesh {
 			}
 		}
 		System.out.println("filter succeed !!!");
-		
-		
 	}
+	/*
+	 * 判断节点和邻域节点是否在同一平面上 
+	 */
 	public boolean isPlane(Map<Integer , Vertex> map_outVertexs , int id) {
 		Vertex vertex = map_outVertexs.get(id);
 		int counter = 1;
@@ -172,6 +201,7 @@ public class HexMesh {
 			Vertexs = Laplacian();
 		}
 		writeFile( Vertexs , fileName);
+		Vertexs = null;
 	}
 	
 	//Laplacian 平滑技术
@@ -183,12 +213,12 @@ public class HexMesh {
 			/*
 			 * 只是根据邻接点求得 该点坐标，并未把该点本身算入
 			 */
-			for(int j : h_Vertexs.get(i).m_Vertexs ) {
+			for(int j : n_Vertexs.get(i).m_Vertexs ) {
 				sum_X += getVertex_X(j);
 				sum_Y += getVertex_Y(j);
 				sum_Z += getVertex_Z(j);
 			}
-			int size = h_Vertexs.get(i).m_Vertexs.size();
+			int size = n_Vertexs.get(i).m_Vertexs.size();
 			item.m_point.setX(sum_X / size);
 			item.m_point.setY(sum_Y / size);
 			item.m_point.setZ(sum_Z / size);
@@ -206,6 +236,7 @@ public class HexMesh {
 			Vertexs = Laplacian_distance();
 		}
 		writeFile(Vertexs , fileName);
+		Vertexs = null;
 	}
 	/*
 	 * 举例加权矩阵
@@ -219,19 +250,18 @@ public class HexMesh {
 			 * 只是根据邻接点求得 该点坐标，并未把该点本身算入
 			 */
 			double sum = 0.0;
-			for(int j : h_Vertexs.get(i).m_Vertexs ) {
-				double distance = Mesh_Math.computeDistance(h_Vertexs.get(i).m_point , h_Vertexs.get(j).m_point );
+			for(int j : n_Vertexs.get(i).m_Vertexs ) {
+				double distance = Mesh_Math.computeDistance(n_Vertexs.get(i).m_point , n_Vertexs.get(j).m_point );
 				sum += distance;
-				sum_X += ( getVertex_X(j) - h_Vertexs.get(i).m_point.getX() ) * distance;
-				sum_Y += ( getVertex_Y(j) - h_Vertexs.get(i).m_point.getY() ) * distance;
-				sum_Z += ( getVertex_Z(j) - h_Vertexs.get(i).m_point.getZ() ) * distance;
+				sum_X += ( getVertex_X(j) - n_Vertexs.get(i).m_point.getX() ) * distance;
+				sum_Y += ( getVertex_Y(j) - n_Vertexs.get(i).m_point.getY() ) * distance;
+				sum_Z += ( getVertex_Z(j) - n_Vertexs.get(i).m_point.getZ() ) * distance;
 			}
-			item.m_point.setX(sum_X / sum + h_Vertexs.get(i).m_point.getX());
-			item.m_point.setY(sum_Y / sum + h_Vertexs.get(i).m_point.getY());
-			item.m_point.setZ(sum_Z / sum + h_Vertexs.get(i).m_point.getZ());
+			item.m_point.setX(sum_X / sum + n_Vertexs.get(i).m_point.getX());
+			item.m_point.setY(sum_Y / sum + n_Vertexs.get(i).m_point.getY());
+			item.m_point.setZ(sum_Z / sum + n_Vertexs.get(i).m_point.getZ());
 			
 			Vertexs.put(i, item);
-			
 		}
 		return Vertexs;
 	}
@@ -241,10 +271,13 @@ public class HexMesh {
 	public void HCLaplacian(String fileName , int times) throws IOException{
 		Map<Integer , Vertex> Vertexs = null;
 		for(int i = 0 ; i < times ; i ++) {
+			//正负两次
 			Vertexs = HCLaplacian(index);
-			Vertexs = HCLaplacian(index);
+			Vertexs = HCLaplacian(index * -1);
 		}
 		writeFile( Vertexs , fileName);
+		
+		Vertexs = null;
 	}
 	
 	//Laplacian 平滑技术
@@ -256,15 +289,15 @@ public class HexMesh {
 			/*
 			 * 只是根据邻接点求得 该点坐标，并未把该点本身算入
 			 */
-			for(int j : h_Vertexs.get(i).m_Vertexs ) {
+			for(int j : n_Vertexs.get(i).m_Vertexs ) {
 				sum_X += getVertex_X(j) * tmp;
 				sum_Y += getVertex_Y(j) * tmp;
 				sum_Z += getVertex_Z(j) * tmp;
 			}
-			int size = h_Vertexs.get(i).m_Vertexs.size();
-			item.m_point.setX(sum_X / size + h_Vertexs.get(i).m_point.getX());
-			item.m_point.setY(sum_Y / size + h_Vertexs.get(i).m_point.getX());
-			item.m_point.setZ(sum_Z / size + h_Vertexs.get(i).m_point.getX());
+			int size = n_Vertexs.get(i).m_Vertexs.size();
+			item.m_point.setX(sum_X / size + n_Vertexs.get(i).m_point.getX());
+			item.m_point.setY(sum_Y / size + n_Vertexs.get(i).m_point.getX());
+			item.m_point.setZ(sum_Z / size + n_Vertexs.get(i).m_point.getX());
 			
 			Vertexs.put(i, item);
 		}
@@ -369,7 +402,38 @@ public class HexMesh {
 			h_Vertexs.get(v7).m_Vertexs.add(v4);
 			h_Vertexs.get(v7).m_Vertexs.add(v6);
 			
+			//---
+			n_Vertexs.get(v0).m_Vertexs.add(v1);
+			n_Vertexs.get(v0).m_Vertexs.add(v3);
+			n_Vertexs.get(v0).m_Vertexs.add(v4);
 			
+			n_Vertexs.get(v1).m_Vertexs.add(v0);
+			n_Vertexs.get(v1).m_Vertexs.add(v2);
+			n_Vertexs.get(v1).m_Vertexs.add(v5);
+			
+			n_Vertexs.get(v2).m_Vertexs.add(v1);
+			n_Vertexs.get(v2).m_Vertexs.add(v3);
+			n_Vertexs.get(v2).m_Vertexs.add(v6);
+			
+			n_Vertexs.get(v3).m_Vertexs.add(v0);
+			n_Vertexs.get(v3).m_Vertexs.add(v2);
+			n_Vertexs.get(v3).m_Vertexs.add(v7);
+			
+			n_Vertexs.get(v4).m_Vertexs.add(v0);
+			n_Vertexs.get(v4).m_Vertexs.add(v5);
+			n_Vertexs.get(v4).m_Vertexs.add(v7);
+			
+			n_Vertexs.get(v5).m_Vertexs.add(v4);
+			n_Vertexs.get(v5).m_Vertexs.add(v6);
+			n_Vertexs.get(v5).m_Vertexs.add(v7);
+			
+			n_Vertexs.get(v6).m_Vertexs.add(v2);
+			n_Vertexs.get(v6).m_Vertexs.add(v5);
+			n_Vertexs.get(v6).m_Vertexs.add(v7);
+			
+			n_Vertexs.get(v7).m_Vertexs.add(v3);
+			n_Vertexs.get(v7).m_Vertexs.add(v4);
+			n_Vertexs.get(v7).m_Vertexs.add(v6);
 		}
 		/*
 		 * 
