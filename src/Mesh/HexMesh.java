@@ -102,11 +102,22 @@ public class HexMesh {
 		/*
 		 * 遍历所有面，能够直接加入到in面集合中的为内部面，如果不能加入则已存在过一次，则加入到外部面中
 		 */
+		int counter = 1;
 		for( CQuad quad : quads ) {
-			if(t_Quads_in.add(quad)) {
-				
-			}else {
+			boolean flag = true;
+			for(CQuad out : t_Quads_out) {
+				if(out.equals(quad) && flag) {
+					t_Quads_in.add(quad);
+					flag = false;
+					break;
+				}
+			}
+			if(flag) {
 				t_Quads_out.add(quad);
+			}
+			
+			if(counter++ % 1000 == 0) {
+				System.out.println(Integer.toString(counter) + " / " + quads.size());
 			}
 		}
 		
@@ -116,17 +127,17 @@ public class HexMesh {
 			inVertexs.add(in.vertexs[2]);
 			inVertexs.add(in.vertexs[3]);
 		}
-		for(CQuad in : t_Quads_out ) {
-			outVertexs.add(in.vertexs[0]);
-			outVertexs.add(in.vertexs[1]);
-			outVertexs.add(in.vertexs[2]);
-			outVertexs.add(in.vertexs[3]);
+		for(CQuad out : t_Quads_out ) {
+			outVertexs.add(out.vertexs[0]);
+			outVertexs.add(out.vertexs[1]);
+			outVertexs.add(out.vertexs[2]);
+			outVertexs.add(out.vertexs[3]);
 		}
 		/*
 		 * 使用结束，释放空间，防止内存泄漏
 		 */
-		t_Quads_in = null;
-		t_Quads_out = null;
+//		t_Quads_in = null;
+//		t_Quads_out = null;
 		/*
 		 * 初始化 n_Vertexs 数据结构
 		 */
@@ -141,7 +152,10 @@ public class HexMesh {
 		/*
 		 * 内部结点皆可优化
 		 */
-		for(int i : inVertexs) {
+//		for(int i : inVertexs) {
+//			vertexs_opt.add(i);
+//		}
+		for(int i = 0 ; i < h_Vertexs.size() ; i ++) {
 			vertexs_opt.add(i);
 		}
 		/*
@@ -159,11 +173,12 @@ public class HexMesh {
 			map_outVertexs.put(i, vertex_tmp);
 		}
 		for(int i : outVertexs) {
-			if(isPlane(map_outVertexs , i)) {
-				vertexs_opt.add(i);
-				System.out.println(Integer.toString(i) + "  is plane !!");
+			if(!isPlane(map_outVertexs , i)) {
+				vertexs_opt.remove(i);
+				System.out.println(Integer.toString(i) + "  is not plane !!");
 			}
 		}
+		System.out.println("filter succeed !!!");
 		System.out.println("filter succeed !!!");
 	}
 	/*
@@ -330,7 +345,6 @@ public class HexMesh {
 			 */
 			data.Do(new fromFile().ReadFile());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.err.println("文件路径无法找到或者 文件不存在 ");
 		}
@@ -436,10 +450,10 @@ public class HexMesh {
 			n_Vertexs.get(v7).m_Vertexs.add(v6);
 		}
 		/*
-		 * 
+		 * -----------------------------------------------------------------------------过滤方式调控点----------------------
 		 */
-//		Vertexfilter();
-		virvalFilfer();
+		Vertexfilter();
+//		virvalFilfer();
 		
 		
 		System.out.println("read succeed !!!");
@@ -460,6 +474,7 @@ public class HexMesh {
 	
 	public void addVertexs(Vertex v) {
 		h_Vertexs.put(v.m_id , v);
+		n_Vertexs.put(v.m_id , v);
 	}
 	public void addHalfFace(HalfFace hf) {
 		h_HalfFaces.put(hf.s_id, hf);
