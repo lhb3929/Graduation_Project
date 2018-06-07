@@ -45,6 +45,13 @@ public class HexMesh {
 			vertexs_opt.add(entry.getKey());
 		}
 	}
+	public void opt_Filfer() {
+		int[] arr = {17661, 37198, 37209, 37210, 37211, 37212, 37213, 37225, 37226, 37227, 37228, 37229, 37241, 37242, 37243, 37244, 37245, 37257, 37258, 37259, 37260, 37261, 37273, 37274, 37275, 37276, 37277, 37289, 37290, 37291, 37292, 37293, 37305, 37306, 37307, 37308, 37309, 37321, 37322, 37323, 37324, 37325, 37337, 37338, 37339, 37340, 37341, 37353, 37354, 37355, 37356, 37357, 37369, 37370, 37371, 37372, 37373, 37385, 37386, 37387, 37388, 37389, 37401, 37402, 37403, 37404, 37405, 37417, 37418, 37419, 37420, 37421, 37426, 37433, 37434, 37435, 37436, 37437, 37438, 37439, 37440, 37447, 37448, 37449, 37450, 37451, 37452, 37463, 37464, 37465, 37466, 37467, 37468, 37479, 37480, 37481, 37482, 37483, 37484, 37495, 37496, 37497, 37498, 37499, 37500, 37511, 37512, 37513, 37514, 37515, 37516, 37527, 37528, 37529, 37530, 37531, 37532, 37543, 37544, 37545, 37546, 37547, 37548, 37559, 37560, 37561, 37562, 37563, 37564, 37575, 37576, 37577, 37578, 37579, 37580, 37591, 37592, 37593, 37594, 37595, 37596, 37607, 37608, 37609, 37610, 37611, 37612, 37623, 37624, 37625, 37626, 37627, 37628, 37639, 37640, 37641, 37642, 37643, 37644, 37655, 37656, 37657, 37658, 37659, 37660, 37671, 37672, 37673, 37674, 37675, 37676, 37677, 37678, 37687, 37688, 37689, 37690, 37691};
+		for(int i : arr ) {
+			vertexs_opt.add(i);
+		}
+		
+	}
 	public void Vertexfilter() {
 		/*
 		 * 选出可优化结点时使用的数据结构
@@ -179,7 +186,6 @@ public class HexMesh {
 			}
 		}
 		System.out.println("filter succeed !!!");
-		System.out.println("filter succeed !!!");
 	}
 	/*
 	 * 判断节点和邻域节点是否在同一平面上 
@@ -206,7 +212,14 @@ public class HexMesh {
 		}
 		return true;
 	}
-
+	/*
+	 *  map_vertex .clone()
+	 */
+	public void init_vertexs(Map<Integer , Vertex> item , Map<Integer , Vertex> tmp) {
+		for(Map.Entry<Integer, Vertex> entry : tmp.entrySet()) {
+			item.put(entry.getKey(), entry.getValue());
+		}
+	}
 	/*
 	 * times次数重载
 	 */
@@ -222,6 +235,7 @@ public class HexMesh {
 	//Laplacian 平滑技术
 	public Map<Integer , Vertex> Laplacian() throws IOException {
 		Map<Integer , Vertex> Vertexs = new HashMap<Integer , Vertex>();
+		init_vertexs(Vertexs , n_Vertexs);
 		for(int i : vertexs_opt) {
 			Vertex item = new Vertex(i);
 			double sum_X = 0.0 , sum_Y = 0.0 ,sum_Z = 0.0;
@@ -258,6 +272,7 @@ public class HexMesh {
 	 */
 	public Map<Integer , Vertex>  Laplacian_distance() throws IOException {
 		Map<Integer , Vertex> Vertexs = new HashMap<Integer , Vertex>();
+		init_vertexs(Vertexs , n_Vertexs);
 		for(int i : vertexs_opt) {
 			Vertex item = new Vertex(i);
 			double sum_X = 0.0 , sum_Y = 0.0 ,sum_Z = 0.0;
@@ -298,6 +313,7 @@ public class HexMesh {
 	//Laplacian 平滑技术
 	public Map<Integer , Vertex> HCLaplacian(double tmp) throws IOException {
 		Map<Integer , Vertex> Vertexs = new HashMap<Integer , Vertex>();
+		init_vertexs(Vertexs , n_Vertexs);
 		for(int i : vertexs_opt) {
 			Vertex item = new Vertex(i);
 			double sum_X = 0.0 , sum_Y = 0.0 ,sum_Z = 0.0;
@@ -333,7 +349,6 @@ public class HexMesh {
 	}
 	
 
-	
 	public void readData() {
 		/*
 		 * 从文件里面读取数据  到这个六面体网格中
@@ -452,8 +467,9 @@ public class HexMesh {
 		/*
 		 * -----------------------------------------------------------------------------过滤方式调控点----------------------
 		 */
-		Vertexfilter();
+//		Vertexfilter();
 //		virvalFilfer();
+		opt_Filfer();
 		
 		
 		System.out.println("read succeed !!!");
