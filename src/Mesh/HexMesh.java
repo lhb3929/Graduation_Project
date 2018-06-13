@@ -110,11 +110,13 @@ public class HexMesh {
 		 * 遍历所有面，能够直接加入到in面集合中的为内部面，如果不能加入则已存在过一次，则加入到外部面中
 		 */
 		int counter = 1;
+		boolean flag;
 		for( CQuad quad : quads ) {
-			boolean flag = true;
+			flag = true;
 			for(CQuad out : t_Quads_out) {
 				if(out.equals(quad) && flag) {
 					t_Quads_in.add(quad);
+					t_Quads_out.remove(quad);
 					flag = false;
 					break;
 				}
@@ -147,14 +149,17 @@ public class HexMesh {
 //		t_Quads_out = null;
 		/*
 		 * 初始化 n_Vertexs 数据结构
+		 * 表面结点仅根据表面节点数据优化，内部结点根据所有节点优化，内部结点不做特殊处理
 		 */
 		for(int tmp : outVertexs) {
-			Vertex vertex = n_Vertexs.get(tmp);
+			Vertex vertex = h_Vertexs.get(tmp);
+			Set<Integer> tmp_set = new HashSet<>(); 
 			for(int v : vertex.m_Vertexs) {
-				if( !outVertexs.contains(v) && inVertexs.contains(v)) {
-					vertex.m_Vertexs.remove(v);
+				if( outVertexs.contains(v) && !inVertexs.contains(v)) {
+					tmp_set.add(v);
 				}
 			}
+			vertex.m_Vertexs = tmp_set;
 		}
 		/*
 		 * 内部结点皆可优化
@@ -162,19 +167,17 @@ public class HexMesh {
 //		for(int i : inVertexs) {
 //			vertexs_opt.add(i);
 //		}
-		for(int i = 0 ; i < h_Vertexs.size() ; i ++) {
+		for(int i = 0 ; i < n_Vertexs.size() ; i ++) {
 			vertexs_opt.add(i);
 		}
 		/*
-		 * 从外部结点中筛选出可优化的
+		 * 从外部结点中筛选出可优化的(反向筛选，取出不能优化的，即表面几何特征特殊的)
 		 */
 		for(int i : outVertexs) {
 			Vertex vertex_tmp = new Vertex(i);
-			for(int j : h_Vertexs.get(i).m_Vertexs) {
+			for(int j : n_Vertexs.get(i).m_Vertexs) {
 				if( outVertexs.contains(j) ) {
 					vertex_tmp.m_Vertexs.add(j);
-				}else {
-					System.out.println("结点 " + Integer.toString(j) + " 不在表面" );
 				}
 			}
 			map_outVertexs.put(i, vertex_tmp);
@@ -182,7 +185,7 @@ public class HexMesh {
 		for(int i : outVertexs) {
 			if(!isPlane(map_outVertexs , i)) {
 				vertexs_opt.remove(i);
-				System.out.println(Integer.toString(i) + "  is not plane !!");
+				System.out.println(" 结点 " + Integer.toString(i) + "  在表面具有集合特征 !!");
 			}
 		}
 		System.out.println("filter succeed !!!");
@@ -467,9 +470,9 @@ public class HexMesh {
 		/*
 		 * -----------------------------------------------------------------------------过滤方式调控点----------------------
 		 */
-//		Vertexfilter();
+		Vertexfilter();
 //		virvalFilfer();
-		opt_Filfer();
+//		opt_Filfer();
 		
 		
 		System.out.println("read succeed !!!");
