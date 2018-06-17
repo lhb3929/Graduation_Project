@@ -11,7 +11,6 @@ import java.util.Set;
 import AboutData.fromFile;
 import AboutData.getData;
 import AboutData.writeData;
-import Geometry.CPoint;
 import Math.Mesh_Math;
 
 /*
@@ -32,7 +31,7 @@ public class HexMesh {
 	public List<CQuad> quads = new ArrayList<CQuad>(); //辅助记录四边形集合
 	
 	public Set<Integer> vertexs_opt = new HashSet<Integer>();  //可优化点
-	Map<Integer , Vertex> map_outVertexs = new HashMap<Integer , Vertex>();  //外部结点的邻域都在表面的集合
+//	Map<Integer , Vertex> map_outVertexs = new HashMap<Integer , Vertex>();  //外部结点的邻域都在表面的集合
 	
 	public Map<Integer , Vertex> n_Vertexs = new HashMap<Integer , Vertex>();
 	public HexMesh() {
@@ -105,6 +104,11 @@ public class HexMesh {
 //			}
 //			
 //		}
+//		List<CQuad> tmp_quads = new ArrayList<CQuad>(); //辅助记录四边形集合
+//		for(int i = 0 ; i < 10 ; i ++ ) {
+//			tmp_quads.add(quads.get(i));
+//		}
+//		quads = tmp_quads ;
 		
 		/*
 		 * 遍历所有面，能够直接加入到in面集合中的为内部面，如果不能加入则已存在过一次，则加入到外部面中
@@ -114,7 +118,7 @@ public class HexMesh {
 		for( CQuad quad : quads ) {
 			flag = true;
 			for(CQuad out : t_Quads_out) {
-				if(out.equals(quad) && flag) {
+				if(out.equal(quad) && flag) {
 					t_Quads_in.add(quad);
 					t_Quads_out.remove(quad);
 					flag = false;
@@ -125,7 +129,7 @@ public class HexMesh {
 				t_Quads_out.add(quad);
 			}
 			
-			if(counter++ % 1000 == 0) {
+			if(counter++ % 10000 == 0) {
 				System.out.println(Integer.toString(counter) + " / " + quads.size());
 			}
 		}
@@ -155,7 +159,7 @@ public class HexMesh {
 			Vertex vertex = h_Vertexs.get(tmp);
 			Set<Integer> tmp_set = new HashSet<>(); 
 			for(int v : vertex.m_Vertexs) {
-				if( outVertexs.contains(v) && !inVertexs.contains(v)) {
+				if( outVertexs.contains(v) ) {       //====================================6-16修改bug   !inVertexs.contain(v)  删除
 					tmp_set.add(v);
 				}
 			}
@@ -173,17 +177,17 @@ public class HexMesh {
 		/*
 		 * 从外部结点中筛选出可优化的(反向筛选，取出不能优化的，即表面几何特征特殊的)
 		 */
+//		for(int i : outVertexs) {
+//			Vertex vertex_tmp = new Vertex(i);
+//			for(int j : n_Vertexs.get(i).m_Vertexs) {
+//				if( outVertexs.contains(j) ) {
+//					vertex_tmp.m_Vertexs.add(j);
+//				}
+//			}
+//			map_outVertexs.put(i, vertex_tmp);
+//		}
 		for(int i : outVertexs) {
-			Vertex vertex_tmp = new Vertex(i);
-			for(int j : n_Vertexs.get(i).m_Vertexs) {
-				if( outVertexs.contains(j) ) {
-					vertex_tmp.m_Vertexs.add(j);
-				}
-			}
-			map_outVertexs.put(i, vertex_tmp);
-		}
-		for(int i : outVertexs) {
-			if(!isPlane(map_outVertexs , i)) {
+			if(!isPlane( n_Vertexs, i)) {
 				vertexs_opt.remove(i);
 				System.out.println(" 结点 " + Integer.toString(i) + "  在表面具有集合特征 !!");
 			}
@@ -198,17 +202,18 @@ public class HexMesh {
 		int counter = 1;
 		Vertex[] vertexs = new Vertex[3];
 		vertexs[0] = h_Vertexs.get(id);
-		CPoint temp = null;
+		Equation temp = null;
 		for(int i : vertex.m_Vertexs) {
 			if(counter < 3) {
 				vertexs[counter ++] = h_Vertexs.get(i);
 			}else if(counter == 3){
 				temp = Mesh_Math.CalNormalVector(vertexs[0], vertexs[1], vertexs[2]);
-				if( !Mesh_Math.perpendicular(h_Vertexs.get(i).m_point , vertexs[0].m_point ,  temp)) {
+				counter += 1;
+				if( !Mesh_Math.perpendicular( temp , h_Vertexs.get(i) )) {
 					return false;
 				}
 			}else {
-				if( !Mesh_Math.perpendicular(h_Vertexs.get(i).m_point , vertexs[0].m_point ,  temp)) {
+				if( !Mesh_Math.perpendicular( temp , h_Vertexs.get(i) )) {
 					return false;
 				}
 			}

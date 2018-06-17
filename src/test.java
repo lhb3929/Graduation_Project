@@ -19,5 +19,8 @@ public class test {
 		demo.Laplacian_distance("/Users/liuhongbin/Documents/Documents/毕业论文/Data/Laplacian3.hex", 5);
 		
 		
+		
+		
+		
 	}
 }
