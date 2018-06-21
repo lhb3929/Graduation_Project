@@ -149,8 +149,8 @@ public class HexMesh {
 		/*
 		 * 使用结束，释放空间，防止内存泄漏
 		 */
-//		t_Quads_in = null;
-//		t_Quads_out = null;
+		t_Quads_in = null;
+		t_Quads_out = null;
 		/*
 		 * 初始化 n_Vertexs 数据结构
 		 * 表面结点仅根据表面节点数据优化，内部结点根据所有节点优化，内部结点不做特殊处理
@@ -165,12 +165,8 @@ public class HexMesh {
 			}
 			vertex.m_Vertexs = tmp_set;
 		}
-		/*
-		 * 内部结点皆可优化
-		 */
-//		for(int i : inVertexs) {
-//			vertexs_opt.add(i);
-//		}
+	
+
 		for(int i = 0 ; i < n_Vertexs.size() ; i ++) {
 			vertexs_opt.add(i);
 		}
